@@ -51,7 +51,76 @@ Resources:
     Properties:
       VpcId: !Ref rVPC
       InternetGatewayId: !Ref rIGW
+  
+  # Public and Private Subnets
+  rPublicSubnet1:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Retain
+    Properties:
+      AvailabilityZone: !FindInMap
+        - RegionMap
+        - !Ref AWS::Region
+        - az1
+      VpcId: !Ref rVPC
+      CidrBlock: 172.31.0.0/24
+      Tags:
+        - Key: Name
+          Value: !Join ['-', [!Ref 'AWS::Region', !Ref 'pEnvironment', !Ref 'pPrefixName', 'public-1']]
+    
+  rPublicSubnet2:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Retain
+    Condition: ProdEnv
+    Properties:
+      AvailabilityZone: !FindInMap
+        - RegionMap
+        - !Ref AWS::Region
+        - az2
+      VpcId: !Ref rVPC
+      CidrBlock: 172.31.1.0/24
+      Tags:
+        - Key: Name
+          Value: !Join ['-', [!Ref 'AWS::Region', !Ref 'pEnvironment', !Ref 'pPrefixName', 'public-2']]
+  
+  rPrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Retain
+    Properties:
+      AvailabilityZone: !FindInMap
+        - RegionMap
+        - !Ref AWS::Region
+        - az1
+      VpcId: !Ref rVPC
+      CidrBlock: 172.31.20.0/24
+      Tags:
+        - Key: Name
+          Value: !Join ['-', [!Ref 'AWS::Region', !Ref 'pEnvironment', !Ref 'pPrefixName', 'private-1']]
+  
+  rPrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Retain
+    Condition: ProdEnv
+    Properties:
+      AvailabilityZone: !FindInMap
+        - RegionMap
+        - !Ref AWS::Region
+        - az2
+      VpcId: !Ref rVPC
+      CidrBlock: 172.31.21.0/24
+      Tags:
+        - Key: Name
+          Value: !Join ['-', [!Ref 'AWS::Region', !Ref 'pEnvironment', !Ref 'pPrefixName', 'private-2']]
 
 Outputs:
   Vpc:
     Value: !Ref rVPC
+  PublicSubnet1:
+    Value: !Ref rPublicSubnet1
+  PublicSubnet2:
+    Condition: ProdEnv
+    Value: !Ref rPublicSubnet2
+  PrivateSubnet1:
+    Value: !Ref rPrivateSubnet1
+  PrivateSubnet2:
+    Condition: ProdEnv
+    Value: !Ref rPrivateSubnet2
