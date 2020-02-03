@@ -169,6 +169,70 @@ Resources:
       SubnetId: !Ref rPrivateSubnet2
       RouteTableId: !Ref rRTPrivate
   
+  # Public Network ACL
+  rPublicNACL:
+    Type: AWS::EC2::NetworkAcl
+    DeletionPolicy: Retain
+    Properties:
+      VpcId: !Ref rVPC
+      Tags:
+        - Key: Name
+          Value: !Join ['-', [!Ref 'AWS::Region', !Ref 'pEnvironment', !Ref 'pPrefixName', 'public-nacl']]
+  
+  r1IngressEntryPublicNACL:
+    Type: AWS::EC2::NetworkAclEntry
+    DeletionPolicy: Retain
+    Properties:
+      CidrBlock: 0.0.0.0/0
+      Egress: false
+      NetworkAclId: !Ref rPublicNACL
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 300
+  
+  r1EgressEntryPublicNACL:
+    Type: AWS::EC2::NetworkAclEntry
+    DeletionPolicy: Retain
+    Properties:
+      CidrBlock: 0.0.0.0/0
+      Egress: true
+      NetworkAclId: !Ref rPublicNACL
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 300
+  
+  # Private NACL
+  rPrivateNACL:
+    Type: AWS::EC2::NetworkAcl
+    DeletionPolicy: Retain
+    Properties:
+      VpcId: !Ref rVPC
+      Tags:
+        - Key: Name
+          Value: !Join ['-', [!Ref 'AWS::Region', !Ref 'pEnvironment', !Ref 'pPrefixName', 'private-nacl']]
+  
+  r1IngressEntryPrivateNACL:
+    Type: AWS::EC2::NetworkAclEntry
+    DeletionPolicy: Retain
+    Properties:
+      CidrBlock: 172.31.0.0/16
+      Egress: false
+      NetworkAclId: !Ref rPrivateNACL
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 300
+  
+  r1EgressEntryPrivateNACL:
+    Type: AWS::EC2::NetworkAclEntry
+    DeletionPolicy: Retain
+    Properties:
+      CidrBlock: 172.31.0.0/16
+      Egress: true
+      NetworkAclId: !Ref rPrivateNACL
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 300
+  
 Outputs:
   Vpc:
     Value: !Ref rVPC
