@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Network Infrastructure of AWS-BP
+Metadata: 
+  Subnets:
+    Description: 2 Tier Architecture. 1 Subnet pair in nonprod env
+
+Parameters: 
+  pPrefixName:
+    Type: String
+    Default: caliskan
+    Description: Enter the project name
+  
+  pEnvironment:
+    Type: String
+    Default: prod
+    AllowedValues:
+      - prod
+      - nonprod
+    Description: Select deployment environment
+
+Mappings: 
+  RegionMap:
+    us-west-2:
+      az1: us-west-2a
+      az2: us-west-2b
+
+Conditions: 
+  ProdEnv: !Equals [!Ref pEnvironment, 'prod']
+
+Resources: 
+  rVPC:
+    Type: AWS::EC2::VPC
+    DeletionPolicy: Retain
+    Properties:
+      CidrBlock: 172.31.0.0/16
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: !Join ['-', [!Ref 'AWS::Region', !Ref 'pEnvironment', !Ref 'pPrefixName', 'vpc']]
+  rIGW:
+    Type: AWS::EC2::InternetGateway
+    DeletionPolicy: Retain
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Join ['-', [!Ref 'AWS::Region', !Ref 'pEnvironment', !Ref 'pPrefixName', 'igw']]
+
+  rAttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    DeletionPolicy: Retain
+    Properties:
+      VpcId: !Ref rVPC
+      InternetGatewayId: !Ref rIGW
+
+Outputs:
+  Vpc:
+    Value: !Ref rVPC
