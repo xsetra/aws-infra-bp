@@ -233,6 +233,38 @@ Resources:
       RuleAction: allow
       RuleNumber: 300
   
+  # Public NACL and Subnet Association
+  rPublicSubnet1NACLAssociation:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Retain
+    Properties:
+      NetworkAclId: !Ref rPublicNACL
+      SubnetId: !Ref rPublicSubnet1
+    
+  rPublicSubnet2NACLAssociation:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Retain
+    Condition: ProdEnv
+    Properties:
+      NetworkAclId: !Ref rPublicNACL
+      SubnetId: !Ref rPublicSubnet2
+  
+  # Private NACL and Subnet Association
+  rPrivateSubnet1NACLAssociation:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Retain
+    Properties:
+      NetworkAclId: !Ref rPrivateNACL
+      SubnetId: !Ref rPrivateSubnet1
+  
+  rPrivateSubnet2NACLAssociation:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Retain
+    Condition: ProdEnv
+    Properties:
+      NetworkAclId: !Ref rPrivateNACL
+      SubnetId: !Ref rPrivateSubnet2
+
 Outputs:
   Vpc:
     Value: !Ref rVPC
