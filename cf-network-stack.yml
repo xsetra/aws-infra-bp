@@ -110,7 +110,65 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join ['-', [!Ref 'AWS::Region', !Ref 'pEnvironment', !Ref 'pPrefixName', 'private-2']]
-
+  
+  # RouteTable Public
+  rRTPublic:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Retain
+    Properties:
+      VpcId: !Ref rVPC
+      Tags:
+        - Key: Name
+          Value: !Join ['-', [!Ref 'AWS::Region', !Ref 'pEnvironment', !Ref 'pPrefixName', 'public-rt']]
+  
+  rRTPublicAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Retain
+    Properties:
+      SubnetId: !Ref rPublicSubnet1
+      RouteTableId: !Ref rRTPublic
+  
+  rRTPublicAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Retain
+    Condition: ProdEnv
+    Properties:
+      SubnetId: !Ref rPublicSubnet2
+      RouteTableId: !Ref rRTPublic
+  
+  rIGWRoute:
+    Type: AWS::EC2::Route
+    DeletionPolicy: Retain
+    Properties:
+      RouteTableId: !Ref rRTPublic
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref rIGW
+  
+  # RouteTable Private
+  rRTPrivate:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Retain
+    Properties:
+      VpcId: !Ref rVPC
+      Tags:
+        - Key: Name
+          Value: !Join ['-', [!Ref 'AWS::Region', !Ref 'pEnvironment', !Ref 'pPrefixName', 'private-rt']]
+    
+  rRTPrivateAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Retain
+    Properties:
+      SubnetId: !Ref rPrivateSubnet1
+      RouteTableId: !Ref rRTPrivate
+  
+  rRTPrivateAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Retain
+    Condition: ProdEnv
+    Properties:
+      SubnetId: !Ref rPrivateSubnet2
+      RouteTableId: !Ref rRTPrivate
+  
 Outputs:
   Vpc:
     Value: !Ref rVPC
