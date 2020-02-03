@@ -1,4 +1,4 @@
 # CloudFormation
 You can find the CloudFormation IaC in the `cf` directory.  
 
-![Planned](/AWS-BP.jpeg.jpg?raw=true "Planned Infra")
+![Planned Infra](https://github.com/xsetra/aws-infra-bp/blob/master/AWS-BP.jpeg)
